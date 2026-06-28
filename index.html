@@ -54,25 +54,25 @@
 <h2>Where data lives</h2>
 <ul>
   <li>A local SQLite database (GRDB) in the app's sandbox container.</li>
-  <li>The unlock PIN is stored only as a PBKDF2-HMAC-SHA256 hash plus salt in the device Keychain (<code>…WhenUnlockedThisDeviceOnly</code>); it never leaves the device.</li>
-  <li>Bank statements you upload are parsed <strong>on device</strong> (text layer or Vision OCR); the file is read via a user-selected, security-scoped grant and is not copied off device.</li>
+  <li>The unlock PIN is stored only as a PBKDF2-HMAC-SHA256 hash plus salt in the device Keychain (<code>…WhenUnlockedThisDeviceOnly</code>). It never leaves the device.</li>
+  <li>Bank statements you upload are parsed <strong>on device</strong> (text layer or Vision OCR). The file is read via a user-selected, security-scoped grant and is not copied off device.</li>
 </ul>
 
 <h2>AI and model providers: on-device only</h2>
-<p>The AI layer (narration and categorization) is <strong>on-device by design</strong>; there is no cloud AI provider. All numbers come from the deterministic core and are verified by a numeric firewall, so the model only phrases pre-computed facts.</p>
+<p>The AI layer (narration and categorization) is <strong>on-device by design</strong>. There is no cloud AI provider. All numbers come from the deterministic core and are verified by a numeric firewall, so the model only phrases pre-computed facts.</p>
 <ul>
   <li><strong>Apple Intelligence</strong> (default): Apple's on-device Foundation Models. If the chosen language isn't supported, a deterministic Czech or English template floor is used.</li>
-  <li><strong>Ollama (local)</strong>: a model server running on this Mac. The app only ever connects to loopback (<code>localhost</code>); the endpoint policy rejects everything else, so transaction text cannot leave the machine.</li>
+  <li><strong>Ollama (local)</strong>: a model server running on this Mac. The app only ever connects to loopback (<code>localhost</code>). The endpoint policy rejects everything else, so transaction text cannot leave the machine.</li>
 </ul>
-<p>The app declares the <code>network.client</code> entitlement only to reach the local Ollama endpoint; with the on-device default it makes no network calls.</p>
+<p>The app declares the <code>network.client</code> entitlement only to reach the local Ollama endpoint. With the on-device default it makes no network calls.</p>
 
 <h2>iCloud sync (opt-in)</h2>
-<p>Multi-device sync is strictly <strong>opt-in</strong> (Settings, then iCloud Sync; off by default). When enabled:</p>
+<p>Multi-device sync is strictly <strong>opt-in</strong> (Settings, then iCloud Sync, off by default). When enabled:</p>
 <ul>
-  <li>Every record is encrypted <strong>on this Mac</strong> with AES-GCM before upload; the 256-bit key lives only in <strong>iCloud Keychain</strong> (itself end-to-end encrypted) and is never sent to Okvio or anyone else.</li>
+  <li>Every record is encrypted <strong>on this Mac</strong> with AES-GCM before upload. The 256-bit key lives only in <strong>iCloud Keychain</strong> (itself end-to-end encrypted) and is never sent to Okvio or anyone else.</li>
   <li>CloudKit stores opaque blobs in your private database, readable by your devices and by no one else, regardless of your Advanced Data Protection setting. Each payload is bound to its record identity, so even a server-side swap of blobs fails to decrypt.</li>
   <li><strong>Metadata visible to Apple:</strong> record counts, record identifiers (table name plus random UUID), and sync timing. Never contents, amounts, merchants, or notes.</li>
-  <li>Turning sync off keeps all local data and stops all network traffic; "Reset iCloud data" deletes the cloud copy and re-uploads from this Mac (the recovery path after an iCloud Keychain reset).</li>
+  <li>Turning sync off keeps all local data and stops all network traffic. "Reset iCloud data" deletes the cloud copy and re-uploads from this Mac (the recovery path after an iCloud Keychain reset).</li>
 </ul>
 <p>Until you enable it, nothing syncs and everything stays local.</p>
 
@@ -81,9 +81,9 @@
 <ul>
   <li>The shared space gets its own household key, generated on this Mac. It travels to your partner <strong>inside the invite link</strong> (over your own channel, e.g. iMessage), never through CloudKit. Apple stores only opaque blobs for shared data too.</li>
   <li>The share is closed: only the partner's invited Apple ID (by email or phone) can accept, and decryption needs the in-link key, so a leaked link alone is useless.</li>
-  <li>Both participants edit shared data; each change records who made it.</li>
+  <li>Both participants edit shared data, and each change records who made it.</li>
   <li>The owner can remove a participant at any time: the key is rotated and the data re-uploaded, so old links and cached copies stop working. A removed member keeps their local copy but no longer syncs.</li>
-  <li>A member can leave; the owner can stop sharing. Private accounts always stay private.</li>
+  <li>A member can leave, and the owner can stop sharing. Private accounts always stay private.</li>
 </ul>
 
 <h2>Permissions</h2>
