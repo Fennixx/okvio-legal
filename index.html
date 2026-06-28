@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Okvio — Privacy Policy</title>
+<meta name="description" content="Privacy policy for Okvio, a private-by-default personal-finance app for macOS.">
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 760px; margin: 0 auto; padding: 48px 22px 96px;
+    color: #1d1d1f; background: #fff;
+  }
+  @media (prefers-color-scheme: dark) { body { color: #f5f5f7; background: #161617; } }
+  h1 { font-size: 2rem; letter-spacing: -0.02em; margin: 0 0 .25em; }
+  h2 { font-size: 1.3rem; margin: 2.2em 0 .6em; letter-spacing: -0.01em; }
+  .lede { font-size: 1.05rem; }
+  blockquote {
+    margin: 1.4em 0; padding: 1em 1.2em; border-left: 4px solid #34c759;
+    background: rgba(52,199,89,.08); border-radius: 8px; font-weight: 600;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 1.2em 0; font-size: .95rem; display: block; overflow-x: auto; }
+  th, td { text-align: left; padding: .55em .7em; border-bottom: 1px solid rgba(128,128,128,.25); vertical-align: top; }
+  th { font-weight: 600; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; background: rgba(128,128,128,.15); padding: .1em .35em; border-radius: 4px; }
+  ul { padding-left: 1.3em; }
+  li { margin: .35em 0; }
+  footer { margin-top: 4em; padding-top: 1.5em; border-top: 1px solid rgba(128,128,128,.25); font-size: .85rem; color: #86868b; }
+  a { color: #0071e3; }
+</style>
+</head>
+<body>
+<h1>Okvio — Privacy Policy</h1>
+<p class="lede">Okvio is a private-by-default personal-finance app for macOS.</p>
+
+<blockquote>By default, everything stays on your Mac. AI always runs locally. Optional iCloud sync is end-to-end encrypted — nobody, not even Apple, can read your data.</blockquote>
+
+<h2>App Store privacy nutrition labels</h2>
+<p><strong>Data collection: None.</strong> Okvio does not collect any data.</p>
+<table>
+  <thead><tr><th>App Store category</th><th>Collected?</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Contact info</td><td>No</td><td>—</td></tr>
+    <tr><td>Financial info</td><td>No</td><td>Transactions, balances, budgets, and statements are stored <strong>only</strong> in the app's local database on this device.</td></tr>
+    <tr><td>Identifiers</td><td>No</td><td>No advertising or tracking identifiers.</td></tr>
+    <tr><td>Usage data</td><td>No</td><td>No analytics SDKs. Diagnostics use Apple's on-device unified logging (OSLog) only — counts/outcomes, never transaction text, merchant names, or amounts.</td></tr>
+    <tr><td>Diagnostics</td><td>No</td><td>Crash/perf data, if any, stays in Apple's standard on-device/opt-in channels.</td></tr>
+  </tbody>
+</table>
+<p><strong>Tracking: None.</strong> Okvio does not track you across apps or websites and contains no third-party advertising or analytics SDKs.</p>
+
+<h2>Where data lives</h2>
+<ul>
+  <li>A local SQLite database (GRDB) in the app's sandbox container.</li>
+  <li>The unlock PIN is stored only as a PBKDF2-HMAC-SHA256 hash + salt in the device Keychain (<code>…WhenUnlockedThisDeviceOnly</code>); it never leaves the device.</li>
+  <li>Bank statements you upload are parsed <strong>on device</strong> (text layer or Vision OCR); the file is read via a user-selected, security-scoped grant and is not copied off device.</li>
+</ul>
+
+<h2>AI / model providers — on-device only</h2>
+<p>The AI layer (narration + categorization) is <strong>on-device by design</strong>; there is no cloud AI provider. All numbers come from the deterministic core and are verified by a numeric firewall — the model only phrases pre-computed facts.</p>
+<ul>
+  <li><strong>Apple Intelligence</strong> (default) — Apple's on-device Foundation Models; if the chosen language isn't supported, a deterministic Czech/English template floor is used.</li>
+  <li><strong>Ollama (local)</strong> — a model server running on this Mac. The app only ever connects to loopback (<code>localhost</code>); the endpoint policy rejects everything else, so transaction text cannot leave the machine.</li>
+</ul>
+<p>The app declares the <code>network.client</code> entitlement only to reach the local Ollama endpoint; with the on-device default it makes no network calls.</p>
+
+<h2>iCloud sync (opt-in)</h2>
+<p>Multi-device sync is strictly <strong>opt-in</strong> (Settings → iCloud Sync; off by default). When enabled:</p>
+<ul>
+  <li>Every record is encrypted <strong>on this Mac</strong> with AES-GCM before upload; the 256-bit key lives only in <strong>iCloud Keychain</strong> (itself end-to-end encrypted) and is never sent to Okvio or anyone else.</li>
+  <li>CloudKit stores opaque blobs in your private database — readable by your devices, by no one else, regardless of your Advanced Data Protection setting. Each payload is bound to its record identity, so even a server-side swap of blobs fails to decrypt.</li>
+  <li><strong>Metadata visible to Apple:</strong> record counts, record identifiers (table name + random UUID), and sync timing. Never contents, amounts, merchants, or notes.</li>
+  <li>Turning sync off keeps all local data and stops all network traffic; "Reset iCloud data" deletes the cloud copy and re-uploads from this Mac (the recovery path after an iCloud Keychain reset).</li>
+</ul>
+<p>Until you enable it, nothing syncs and everything stays local.</p>
+
+<h2>Household sharing (opt-in)</h2>
+<p>You can share selected accounts with a partner as a separate <strong>space</strong> (your private data never mixes in). Sharing reuses the same end-to-end-encrypted channel:</p>
+<ul>
+  <li>The shared space gets its own household key, generated on this Mac. It travels to your partner <strong>inside the invite link</strong> (over your own channel, e.g. iMessage), never through CloudKit. Apple stores only opaque blobs for shared data too.</li>
+  <li>The share is closed: only the partner's invited Apple ID (by email/phone) can accept, and decryption needs the in-link key, so a leaked link alone is useless.</li>
+  <li>Both participants edit shared data; each change records who made it.</li>
+  <li>The owner can remove a participant at any time: the key is rotated and the data re-uploaded, so old links and cached copies stop working. A removed member keeps their local copy but no longer syncs.</li>
+  <li>A member can leave; the owner can stop sharing. Private accounts always stay private.</li>
+</ul>
+
+<h2>Permissions</h2>
+<ul>
+  <li><strong>Face ID / device authentication</strong> (optional) — to unlock the app.</li>
+  <li><strong>Notifications</strong> (optional, off by default) — local budget-threshold alerts and planned-payment reminders only.</li>
+</ul>
+
+<h2>Export compliance</h2>
+<p>Okvio uses only standard, Apple-provided cryptography (Keychain, CryptoKit AES-GCM for the opt-in end-to-end-encrypted sync, and PBKDF2 hashing). It implements no proprietary or non-exempt encryption.</p>
+
+<footer>
+  Okvio · Last updated June 2026
+</footer>
+</body>
+</html>
